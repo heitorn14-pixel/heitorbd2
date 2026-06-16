@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a23;
+      --border:    #252b38;
+      --accent:    #5b7fff;
+      --accent-dim:#2a3a7c;
+      --text:      #e8eaf0;
+      --muted:     #6b7591;
+      --danger:    #ff5c5c;
+      --success:   #3ecf8e;
+      --radius:    14px;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image: radial-gradient(ellipse 70% 50% at 60% 0%, #1a2240 0%, transparent 70%);
+    }
+
+    /* ── card ── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 36px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: grid; place-items: center;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── tabs ── */
+    .tabs {
+      display: flex;
+      background: var(--bg);
+      border-radius: 9px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0,0,0,.4);
+    }
+
+    /* ── form ── */
+    .form-group { margin-bottom: 18px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91,127,255,.15);
+    }
+    input::placeholder { color: var(--muted); }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .18s, transform .12s;
+      margin-top: 4px;
+    }
+    .btn:active { transform: scale(.98); }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: .88; }
+
+    /* ── alert ── */
+    .alert {
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      margin-bottom: 18px;
+      display: none;
+      line-height: 1.45;
+    }
+    .alert.show { display: block; }
+    .alert-error   { background: rgba(255,92,92,.12); border: 1px solid rgba(255,92,92,.3); color: #ff8a8a; }
+    .alert-success { background: rgba(62,207,142,.12); border: 1px solid rgba(62,207,142,.3); color: var(--success); }
+
+    /* ── dashboard ── */
+    #dashboard { display: none; }
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .dash-header h1 { font-size: 20px; }
+    .btn-sm {
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 7px;
+      background: var(--border);
+      color: var(--text);
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .btn-sm:hover { background: #2f3748; }
+
+    .welcome-box {
+      background: linear-gradient(135deg, var(--accent-dim), #0d1526);
+      border: 1px solid var(--accent-dim);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .welcome-box p { font-size: 14px; color: #a0b0e0; margin-top: 4px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    .stat-value { font-size: 26px; font-family: 'Sora', sans-serif; font-weight: 700; margin-top: 4px; }
+
+    .users-table {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .users-table h3 {
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      border-bottom: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 11px 18px;
+      text-align: left;
+      font-size: 13.5px;
+    }
+    th { color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+    td { border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .badge-blue { background: rgba(91,127,255,.15); color: #8aabff; }
+    .badge-green { background: rgba(62,207,142,.15); color: var(--success); }
+
+    /* ── responsive ── */
+    @media(max-width: 460px) {
+      .card { padding: 28px 20px; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ── AUTH SCREEN ── -->
+  <div id="authScreen">
+    <div class="logo">
+      <div class="logo-icon">⬡</div>
+      <span class="logo-text">Nexus</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Entrar</button>
+      <button class="tab"        onclick="switchTab('register')">Criar conta</button>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <!-- Login -->
+    <div id="loginForm">
+      <h1>Bem-vindo de volta</h1>
+      <p class="subtitle">Acesse sua conta para continuar.</p>
+
+      <div class="form-group">
+        <label for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" placeholder="voce@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Senha</label>
+        <input id="loginPass" type="password" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+    </div>
+
+    <!-- Register -->
+    <div id="registerForm" style="display:none">
+      <h1>Crie sua conta</h1>
+      <p class="subtitle">Preencha os dados abaixo para se registrar.</p>
+
+      <div class="form-group">
+        <label for="regName">Nome completo</label>
+        <input id="regName" type="text" placeholder="João Silva" />
+      </div>
+      <div class="form-group">
+        <label for="regEmail">E-mail</label>
+        <input id="regEmail" type="email" placeholder="voce@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="regPass">Senha</label>
+        <input id="regPass" type="password" placeholder="mínimo 6 caracteres" />
+      </div>
+      <div class="form-group">
+        <label for="regPass2">Confirmar senha</label>
+        <input id="regPass2" type="password" placeholder="repita a senha" />
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()">Criar conta</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="dashboard">
+    <div class="dash-header">
+      <div class="logo" style="margin-bottom:0">
+        <div class="logo-icon">⬡</div>
+        <span class="logo-text">Nexus</span>
+      </div>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+
+    <div class="welcome-box">
+      <h1 id="dashName">Olá!</h1>
+      <p id="dashEmail"></p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Usuários cadastrados</div>
+        <div class="stat-value" id="statUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sessão iniciada</div>
+        <div class="stat-value" id="statTime">—</div>
+      </div>
+    </div>
+
+    <div class="users-table">
+      <h3>Banco de dados — usuários</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Papel</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ════════════════════════════════
+   Mini banco de dados via IndexedDB
+   ════════════════════════════════ */
+
+const DB_NAME = 'nexus_db';
+const DB_VER  = 1;
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('users')) {
+        const store = d.createObjectStore('users', { keyPath: 'email' });
+        store.createIndex('email', 'email', { unique: true });
+        // seed: admin padrão
+        store.transaction.oncomplete = () => {
+          d.transaction('users','readwrite')
+           .objectStore('users')
+           .add({ email:'admin@nexus.com', name:'Admin Nexus', password: hashPass('admin123'), role:'admin', createdAt: new Date().toISOString() });
+        };
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+function hashPass(p) {
+  // Hash simples (djb2) — em produção use bcrypt no backend!
+  let h = 5381;
+  for (let i = 0; i < p.length; i++) h = ((h << 5) + h) ^ p.charCodeAt(i);
+  return (h >>> 0).toString(16);
+}
+
+function dbAdd(store, data) {
+  return new Promise((res, rej) => {
+    const tx  = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).add(data);
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const req = db.transaction(store).objectStore(store).get(key);
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((res, rej) => {
+    const req = db.transaction(store).objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+/* ════════════════════
+   UI helpers
+   ════════════════════ */
+let currentTab = 'login';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === (tab==='login'?0:1)));
+  document.getElementById('loginForm').style.display    = tab==='login'    ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? '' : 'none';
+  hideAlert();
+}
+
+function showAlert(msg, type='error') {
+  const el = document.getElementById('alert');
+  el.textContent = msg;
+  el.className = `alert show alert-${type}`;
+}
+function hideAlert() {
+  document.getElementById('alert').className = 'alert';
+}
+
+/* ════════════════════
+   Auth actions
+   ════════════════════ */
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+
+  if (!email || !pass) return showAlert('Preencha e-mail e senha.');
+
+  const user = await dbGet('users', email);
+  if (!user || user.password !== hashPass(pass))
+    return showAlert('E-mail ou senha incorretos.');
+
+  sessionStorage.setItem('session', JSON.stringify({ email: user.email, name: user.name, role: user.role, start: new Date().toISOString() }));
+  showDashboard(user);
+}
+
+async function doRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+
+  if (!name || !email || !pass || !pass2) return showAlert('Preencha todos os campos.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAlert('E-mail inválido.');
+  if (pass.length < 6) return showAlert('A senha deve ter ao menos 6 caracteres.');
+  if (pass !== pass2) return showAlert('As senhas não coincidem.');
+
+  const exists = await dbGet('users', email);
+  if (exists) return showAlert('Esse e-mail já está em uso.');
+
+  await dbAdd('users', { email, name, password: hashPass(pass), role:'user', createdAt: new Date().toISOString() });
+
+  // auto-login
+  const user = { email, name, role:'user' };
+  sessionStorage.setItem('session', JSON.stringify({ ...user, start: new Date().toISOString() }));
+  showAlert('Conta criada com sucesso!', 'success');
+  setTimeout(() => showDashboard(user), 700);
+}
+
+function doLogout() {
+  sessionStorage.removeItem('session');
+  document.getElementById('dashboard').style.display    = 'none';
+  document.getElementById('authScreen').style.display   = '';
+  switchTab('login');
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value  = '';
+}
+
+/* ════════════════════
+   Dashboard
+   ════════════════════ */
+async function showDashboard(user) {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display  = '';
+
+  document.getElementById('dashName').textContent  = `Olá, ${user.name.split(' ')[0]} 👋`;
+  document.getElementById('dashEmail').textContent = user.email;
+
+  const session = JSON.parse(sessionStorage.getItem('session'));
+  const time    = new Date(session.start).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('statTime').textContent = time;
+
+  const users = await dbGetAll('users');
+  document.getElementById('statUsers').textContent = users.length;
+
+  const tbody = document.getElementById('usersTableBody');
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-blue':'badge-green'}">${u.role}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* ════════════════════
+   Enter key support
+   ════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (currentTab === 'login')    doLogin();
+  else                           doRegister();
+});
+
+/* ════════════════════
+   Boot
+   ════════════════════ */
+openDB().then(() => {
+  const saved = sessionStorage.getItem('session');
+  if (saved) {
+    const s = JSON.parse(saved);
+    dbGet('users', s.email).then(user => { if (user) showDashboard(user); });
+  }
+}).catch(err => {
+  document.body.insertAdjacentHTML('beforeend',
+    `<p style="color:red;position:fixed;bottom:10px;left:10px">Erro ao abrir banco: ${err}</p>`);
+});
+</script>
+</body>
+</html>
